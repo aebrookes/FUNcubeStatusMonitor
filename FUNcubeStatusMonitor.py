@@ -2,7 +2,7 @@
 # @FUNcubeUK Twitter account on changes
 
 import os
-import csv
+import re
 import json
 import urllib.request as urllib2
 from pprint import pprint
@@ -41,23 +41,30 @@ except urllib2.HTTPError as err:
 text = json.loads(jsonurl.read())
 pprint(text)
 
-SatMode = text["satelliteMode"]
-TransponderState = text["transponderState"]
+SatMode = text["satelliteMode"].upper()
+TransponderState = text["transponderState"].upper()
 
 print("Satellite Mode: ", SatMode)
 print("Transponder State:", TransponderState)
 
-line_number = 0
-with open('FUNcubeStatus.csv', 'r') as f:
-    mycsv = csv.reader(f)
-    mycsv = list(mycsv)
-    PreviousTransponderState = mycsv[line_number][1]
-    PreviousSatMode  = mycsv[line_number][0]
+recent_tweets = api.user_timeline()
 
-with open('FUNcubeStatus.csv', 'w') as fp:
-    a = csv.writer(fp, delimiter=',')
-    data = [[text["satelliteMode"], text["transponderState"]]]
-    a.writerows(data)
+for recent_tweet in recent_tweets:
+        # The tweet was a status update, stop searching recent tweets
+        print("Most recent status update tweet: ", recent_tweet.text)
+
+        matchObj = re.match(".*Mode (\w+). Transponder (\w+).", recent_tweet.text)
+
+        if matchObj:
+            PreviousSatMode = matchObj.group(1)
+            PreviousTransponderState = matchObj.group(2)
+        else:
+            print ("No match!")
+            exit(0)
+        break
+else:
+    # Didn't find a tweet that was a status update
+    exit(0)
 
 print("Previous Satellite Mode: ", PreviousSatMode)
 print("Previous Transponder Mode: ", PreviousTransponderState)
