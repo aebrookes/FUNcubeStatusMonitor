@@ -16,12 +16,15 @@ load_dotenv(dotenv_path='.env')
 # OAuth process, using the keys and tokens
 auth = tweepy.OAuthHandler(os.getenv("CONSUMER_KEY"), os.getenv("CONSUMER_SECRET"))
 auth.set_access_token(os.getenv("ACCESS_TOKEN"), os.getenv("ACCESS_TOKEN_SECRET"))
- 
+
 # Creation of the actual interface, using authentication
 api = tweepy.API(auth)
- 
+
 user = api.me()
- 
+
+PreviousSatMode = ""
+PreviousTransponderState = ""
+
 print('Name: ' + user.name)
 print('Location: ' + user.location)
 print('Followers: ' + str(user.followers_count))
@@ -60,7 +63,7 @@ for recent_tweet in recent_tweets:
             PreviousSatMode = matchObj.group(1)
             PreviousTransponderState = matchObj.group(2)
         else:
-            print ("No match!")
+            print("No match!")
             exit(0)
         break
 else:
@@ -71,24 +74,16 @@ print("Previous Satellite Mode: ", PreviousSatMode)
 print("Previous Transponder Mode: ", PreviousTransponderState)
 
 if SatMode == PreviousSatMode and TransponderState == PreviousTransponderState:
-   #If neither switching mode or transponder state have changed do nothing
-   print('Satellite status unchanged - NOP')
-elif SatMode == "Auto" and PreviousSatMode == "Auto":
-   #If in automatic mode and transponder state changes, do nothing
-   print('Transponder state changed in auto mode - NOP')
+    # If neither switching mode or transponder state have changed do nothing
+    print('Satellite status unchanged - NOP')
+elif SatMode == "AUTO" and PreviousSatMode == "AUTO":
+    # If in automatic mode and transponder state changes, do nothing
+    print('Transponder state changed in auto mode - NOP')
 else:
-   print('Switching mode change or change of transponder state whilst in manual mode - UPDATING @FUNCUBEUK STATUS')
-   
-   if SatMode == 'Auto':
-         SatModeDesc = 'AUTO'
-   else: 
-        SatModeDesc = 'MANUAL'
-  
-   if TransponderState == 'Off':
-         TransponderStateDesc = 'OFF'
-   else:
-         TransponderStateDesc = 'ON'
+    print('Switching mode change or change of transponder state whilst in manual mode - UPDATING @FUNCUBEUK STATUS')
 
-   tweetText = 'FUNcube-1 status update: Mode ' + SatModeDesc + '. Transponder ' +  TransponderStateDesc + '. #FUNcube #amsat #hamradio'
-   print(tweetText)
-   api.update_status(tweetText)
+    tweetText = 'FUNcube-1 status update: Mode ' + SatMode + '. Transponder ' + TransponderState + '. #FUNcube #amsat #hamradio'
+    print(tweetText)
+
+    api.update_status(tweetText)
+
