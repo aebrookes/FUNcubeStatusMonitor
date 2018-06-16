@@ -50,6 +50,7 @@ print("Transponder State:", TransponderState)
 recent_tweets = api.user_timeline()
 
 for recent_tweet in recent_tweets:
+    if recent_tweet.text.find("FUNcube-1 status update") == 0:
         # The tweet was a status update, stop searching recent tweets
         print("Most recent status update tweet: ", recent_tweet.text)
 
