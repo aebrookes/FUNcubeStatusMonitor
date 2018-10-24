@@ -82,7 +82,8 @@ elif SatMode == "AUTO" and PreviousSatMode == "AUTO":
 else:
     print('Switching mode change or change of transponder state whilst in manual mode - UPDATING @FUNCUBEUK STATUS')
 
-    tweetText = 'FUNcube-1 status update: Mode ' + SatMode + '. Transponder ' + TransponderState + '. #FUNcube #amsat #hamradio'
+    tweetText = 'FUNcube-1 status update: Mode ' + SatMode + '. Transponder ' + TransponderState + \
+                '. #FUNcube #amsat #hamradio'
     print(tweetText)
 
     api.update_status(tweetText)
